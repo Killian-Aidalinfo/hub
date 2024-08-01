@@ -1,0 +1,13 @@
+parsers:
+    - crowdsecurity/syslog-logs
+    - crowdsecurity/geoip-enrich
+    - ./parsers/s01-parse/aidalinfo/parser-glpi.yaml
+scenarios:
+    - ./scenarios/aidalinfo/glpi-bf.yaml
+postoverflows:
+    - ""
+log_file: glpi-logs.log
+log_type: glpi
+labels: {}
+ignore_parsers: true
+override_statics: []

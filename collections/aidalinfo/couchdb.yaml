@@ -1,0 +1,18 @@
+#the list of parsers it contains
+parsers:
+<<<<<<< HEAD
+  - aidalinfo/couchdb-logs
+scenarios:
+=======
+  - aidalinfo/couchdb-log-node
+  - aidalinfo/couchdb-log-subnode
+scenarios:
+  - aidalinfo/couchdb-slow-bf
+>>>>>>> a1512b05f798ab398e6de95ac02856b34a13d77b
+  - aidalinfo/couchdb-bf
+  - aidalinfo/couchdb-crawl
+
+description: "CouchDB parsers and scenarios for improve your security ! Made with <3 by Aidalinfo"
+author: aidalinfo
+tags:
+  - couchdb

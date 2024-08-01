@@ -1,0 +1,37 @@
+debug: true
+filter: "evt.Parsed.program == 'glpi'"
+name: aidalinfo/glpi-login
+description: "Parse failed login to glpi log in English, French and Deutsch"
+onsuccess: next_stage
+nodes:
+  # French grok pattern
+  - grok:
+      pattern: '\[%{DATA:login}\] %{NUMBER:number}: Connexion échouée de %{WORD:username} depuis .* %{IPV4:ipAddress}'
+      apply_on: message
+      statics:
+        - meta: username
+          expression: "evt.Parsed.username"
+        - meta: log_type
+          value: bf-glpi
+  # English grok pattern
+  - grok:
+      pattern: '\[%{DATA:login}\] %{NUMBER:number}: Failed login for %{WORD:username} from .* %{IPV4:ipAddress}'
+      apply_on: message
+      statics:
+        - meta: username
+          expression: "evt.Parsed.username"
+        - meta: log_type
+          value: bf-glpi
+  # Deutsch grok pattern
+  - grok:
+      pattern: '\[%{DATA:login}\] %{NUMBER:number}: Anmeldung des Benutzers %{WORD:username} von .* %{IPV4:ipAddress} fehlgeschlagen'
+      apply_on: message
+      statics:
+        - meta: username
+          expression: "evt.Parsed.username"
+        - meta: log_type
+          value: bf-glpi
+statics:
+## Pass Time and Source IP to other stages and scenarios.
+    - meta: source_ip
+      expression: "evt.Parsed.ipAddress"

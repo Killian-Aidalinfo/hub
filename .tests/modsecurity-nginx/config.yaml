@@ -1,0 +1,11 @@
+parsers:
+- ./parsers/s01-parse/crowdsecurity/modsecurity.yaml
+- crowdsecurity/syslog-logs
+- crowdsecurity/dateparse-enrich
+scenarios:
+- ./scenarios/crowdsecurity/modsecurity.yaml
+postoverflows:
+- ""
+log_file: modsecurity-nginx.log
+log_type: modsecurity
+ignore_parsers: true

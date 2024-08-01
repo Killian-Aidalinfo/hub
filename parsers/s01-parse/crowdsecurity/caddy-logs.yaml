@@ -1,0 +1,40 @@
+filter: "evt.Parsed.program startsWith 'caddy' && UnmarshalJSON(evt.Parsed.message, evt.Unmarshaled, 'caddy') in ['', nil]"
+onsuccess: next_stage
+name: crowdsecurity/caddy-logs
+description: "Parse caddy logs"
+statics:
+  - meta: log_type
+    value: http_access-log
+  - target: evt.StrTime
+    expression: |
+      Sprintf("%v", evt.Unmarshaled.caddy.ts) matches '^[0-9e\\.\\+]+$' ? int(evt.Unmarshaled.caddy.ts) : evt.Unmarshaled.caddy.ts
+  - meta: service
+    value: http
+  ##Caddy now sets client_ip to the value of X-Forwarded-For if users sets trusted proxies
+  - parsed: remote_ip
+    expression: evt.Unmarshaled.caddy.request.client_ip
+  - parsed: http_version
+    expression: "evt.Unmarshaled.caddy.request.proto != nil ? Split(evt.Unmarshaled.caddy.request.proto, '/')[1] : nil"
+  - parsed: remote_addr
+    expression: "evt.Unmarshaled.caddy.request.remote_addr != nil ? Split(evt.Unmarshaled.caddy.request.remote_addr, ':')[0] : nil"
+  - meta: source_ip
+    expression: evt.Parsed.remote_ip
+  - meta: http_status
+    expression: int(evt.Unmarshaled.caddy.status)
+  - meta: http_path
+    expression: evt.Unmarshaled.caddy.request.uri
+  - parsed: request #Add for http-logs enricher
+    expression: evt.Unmarshaled.caddy.request.uri
+  - parsed: verb
+    expression: evt.Unmarshaled.caddy.request.method
+  - meta: http_verb
+    expression: evt.Unmarshaled.caddy.request.method
+  - parsed: http_user_agent
+    expression: "get(evt.Unmarshaled.caddy.request.headers, 'User-Agent') != nil ? evt.Unmarshaled.caddy.request.headers['User-Agent'][0] : nil"
+  - meta: http_user_agent
+    expression: evt.Parsed.http_user_agent
+  - meta: target_fqdn
+    expression: evt.Unmarshaled.caddy.request.host
+  - meta: sub_type
+    expression: "evt.Meta.http_status == '401' && get(evt.Unmarshaled.caddy.resp_headers, 'Www-Authenticate') != nil && any(get(evt.Unmarshaled.caddy.resp_headers, 'Www-Authenticate'), { # startsWith 'Basic' }) ? 'auth_fail' : nil"
+
